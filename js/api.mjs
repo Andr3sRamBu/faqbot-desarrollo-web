@@ -28,7 +28,7 @@ const EN_DESARROLLO =
 
 export const API_BASE = EN_DESARROLLO
   ? "http://localhost:3000"
-  : "https://TU-BACKEND.onrender.com"; // ← CAMBIAR al publicar en Render
+  : "https://faqbot-api.onrender.com"; // backend publicado en Render
 
 /** Ruta concreta a la que le hacemos la petición. */
 export const RUTA_PREGUNTAR = `${API_BASE}/api/preguntar`;

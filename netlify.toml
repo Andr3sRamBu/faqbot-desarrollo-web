@@ -1,0 +1,42 @@
+# ==========================================================
+# netlify.toml  -  CONFIGURACIÓN DEL DESPLIEGUE DEL FRONTEND
+# ----------------------------------------------------------
+# Tener la configuración en un archivo del repositorio, y no
+# solo apuntada en el panel de Netlify, significa que el
+# despliegue se puede reproducir: cualquiera que clone el
+# proyecto obtiene exactamente el mismo resultado.
+# ==========================================================
+
+[build]
+  # No hay nada que compilar: el proyecto es HTML, CSS y JS
+  # que el navegador entiende directamente.
+  command = ""
+
+  # Carpeta que se publica. "." es la raíz del repositorio,
+  # donde está el index.html.
+  publish = "."
+
+# ----------------------------------------------------------
+# CABECERAS DE SEGURIDAD
+# ----------------------------------------------------------
+# Las mismas que pone el servidor de Express en server.mjs.
+# Aquí hacen falta otra vez porque en producción quien sirve
+# la página es Netlify, no nuestro servidor: Express solo
+# atiende las peticiones a /api.
+# ----------------------------------------------------------
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Impide que el navegador "adivine" el tipo de un archivo.
+    X-Content-Type-Options = "nosniff"
+    # Impide que otra página nos meta en un <iframe> invisible.
+    X-Frame-Options = "DENY"
+    # Limita la información que se filtra al salir del sitio.
+    Referrer-Policy = "no-referrer"
+
+# Los módulos ES deben servirse con un tipo de JavaScript, o
+# el navegador se niega a ejecutarlos.
+[[headers]]
+  for = "/js/*.mjs"
+  [headers.values]
+    Content-Type = "text/javascript; charset=utf-8"
