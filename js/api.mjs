@@ -33,8 +33,23 @@ export const API_BASE = EN_DESARROLLO
 /** Ruta concreta a la que le hacemos la petición. */
 export const RUTA_PREGUNTAR = `${API_BASE}/api/preguntar`;
 
-/** Si el servidor no contesta en este tiempo, cortamos la espera. */
-const TIEMPO_MAXIMO_MS = 6000;
+/* Si el servidor no contesta en este tiempo, cortamos la espera.
+
+   ¿POR QUÉ TANTA DIFERENCIA ENTRE LOS DOS VALORES?
+   El plan gratuito de Render apaga el servicio cuando lleva un
+   rato sin recibir peticiones. La primera petición después de
+   ese reposo tiene que esperar a que el servidor vuelva a
+   arrancar, y eso tarda cerca de un minuto.
+
+   Con 6 segundos en producción, esa primera pregunta siempre
+   fallaría y caeríamos al respaldo local sin necesidad. */
+const TIEMPO_MAXIMO_MS = EN_DESARROLLO ? 6_000 : 40_000;
+
+/* La comprobación de salud se hace al cargar la página, en
+   segundo plano. Le damos el mismo margen: si el servidor está
+   despertando, preferimos esperar y mostrar "conectado" tarde
+   antes que anunciar un modo local que no es cierto. */
+const TIEMPO_SALUD_MS = EN_DESARROLLO ? 3_000 : 40_000;
 
 /* ----------------------------------------------------------
    2) UN ERROR PROPIO
@@ -130,7 +145,7 @@ export async function preguntarAlServidor(pregunta) {
 export async function servidorDisponible() {
   try {
     const respuesta = await fetch(`${API_BASE}/api/salud`, {
-      signal: AbortSignal.timeout(3000),
+      signal: AbortSignal.timeout(TIEMPO_SALUD_MS),
     });
     return respuesta.ok;
   } catch {
