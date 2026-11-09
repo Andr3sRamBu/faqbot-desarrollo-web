@@ -1,0 +1,22 @@
+{
+  "name": "faqbot-desarrollo-web",
+  "version": "1.0.0",
+  "description": "Chatbot de preguntas frecuentes sobre desarrollo web. Proyecto de la materia Desarrollo Web, UNISANGIL.",
+  "type": "module",
+  "main": "server/server.mjs",
+  "scripts": {
+    "start": "node server/server.mjs",
+    "dev": "node --watch server/server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": ["chatbot", "faq", "express", "unisangil"],
+  "author": "Andrés Fernando Ramirez Buitrago",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2"
+  }
+}
