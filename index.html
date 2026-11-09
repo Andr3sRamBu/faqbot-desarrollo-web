@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<!-- data-bs-theme es el interruptor de tema de Bootstrap 5.3:
+     al cambiarlo entre "dark" y "light" (lo hace tema.mjs) todos
+     los componentes cambian de color solos. -->
+<html lang="es" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <!-- viewport: sin esta línea el celular finge ser un computador
+       de 980px y el diseño adaptable no funciona. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Chatbot de preguntas frecuentes sobre HTML, CSS, JavaScript y seguridad en el front-end.">
+  <meta name="color-scheme" content="dark light">
+
+  <title>FAQ Bot · Desarrollo Web</title>
+
+  <!-- preconnect: le avisa al navegador que vamos a pedir archivos
+       a este dominio para que vaya abriendo la conexión. Es una de
+       las optimizaciones de carga. -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+  <!-- Bootstrap 5.3.3 por CDN con VERSIÓN FIJA en la URL.
+       Fijar la versión evita que una actualización del CDN rompa
+       el diseño sin que nos demos cuenta. -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+  <!-- Nuestro CSS va DESPUÉS de Bootstrap para poder ajustar cosas puntuales. -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+  <!-- Enlace para saltar al contenido: la primera parada del
+       tabulador. Quien navega solo con teclado no tiene que
+       recorrer toda la barra superior en cada página. -->
+  <a href="#contenido" class="visually-hidden-focusable skip-link">Saltar al contenido principal</a>
+
+  <!-- ====================== ENCABEZADO ====================== -->
+  <header>
+    <nav class="navbar bg-body-tertiary border-bottom" aria-label="Barra principal">
+      <div class="container">
+        <span class="navbar-brand mb-0 h1">
+          <span aria-hidden="true">🤖</span> FAQ Bot
+        </span>
+
+        <div class="d-flex gap-2">
+          <button type="button" id="boton-tema"
+                  class="btn btn-sm btn-outline-secondary"
+                  aria-pressed="true" aria-label="Cambiar a tema claro">
+            <span id="texto-boton-tema">Tema claro</span>
+          </button>
+
+          <button type="button" id="boton-borrar"
+                  class="btn btn-sm btn-outline-danger"
+                  aria-label="Borrar la conversación y las preferencias guardadas">
+            Borrar datos
+          </button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ====================== CONTENIDO ====================== -->
+  <main id="contenido" class="container flex-grow-1 py-4">
+    <!-- row + col: la cuadrícula de 12 columnas de Bootstrap.
+         col-12 = ancho completo en celular;
+         col-lg-8 = 8 de 12 columnas en pantallas grandes. -->
+    <div class="row justify-content-center g-4">
+
+      <div class="col-12 col-lg-8 col-xl-7">
+
+        <div class="text-center mb-4">
+          <h1 class="h3">Pregúntame sobre desarrollo web</h1>
+          <p class="text-body-secondary mb-0">
+            HTML, CSS, JavaScript, el DOM y seguridad en el front-end.
+          </p>
+        </div>
+
+        <!-- ---------------- Tarjeta del chat ---------------- -->
+        <section class="card shadow-sm mb-4" aria-labelledby="titulo-chat">
+          <h2 id="titulo-chat" class="visually-hidden">Conversación con el FAQ Bot</h2>
+
+          <!-- aria-live="polite": cada mensaje nuevo se le anuncia a
+               quien usa lector de pantalla, sin interrumpirlo.
+               Debe existir en el HTML desde el principio (vacío) para
+               que el navegador lo vigile. -->
+          <div id="chat-log" class="card-body chat-log"
+               role="log" aria-live="polite" aria-relevant="additions" tabindex="0">
+            <!-- Los mensajes los inserta ui.mjs con createElement -->
+          </div>
+
+          <!-- Zona de avisos: errores, confirmaciones y estado de conexión -->
+          <div id="zona-avisos" class="px-3"></div>
+
+          <!-- Botones de temas sugeridos (delegación de eventos aquí) -->
+          <section class="card-body border-top pt-3" aria-labelledby="titulo-sugerencias">
+            <h3 id="titulo-sugerencias" class="h6 text-body-secondary mb-2">Temas sugeridos</h3>
+            <div id="suggestions-list" class="d-flex flex-wrap gap-2">
+              <!-- Los botones los genera ui.mjs -->
+            </div>
+          </section>
+
+          <!-- Formulario de pregunta -->
+          <div class="card-footer bg-body-tertiary">
+            <form id="chat-form" class="row g-2 align-items-start" novalidate>
+              <div class="col">
+                <!-- label asociado con "for": obligatorio para accesibilidad.
+                     visually-hidden lo oculta a la vista pero lo deja
+                     disponible para el lector de pantalla. -->
+                <label for="chat-input" class="form-label visually-hidden">
+                  Escribe tu pregunta
+                </label>
+                <input type="text" id="chat-input" class="form-control"
+                       placeholder="Escribe tu pregunta aquí…"
+                       autocomplete="off" maxlength="200"
+                       aria-describedby="ayuda-chat">
+                <div id="ayuda-chat" class="form-text">
+                  Máximo 200 caracteres. También puedes pulsar un tema sugerido.
+                </div>
+              </div>
+              <div class="col-auto">
+                <button type="submit" id="send-btn" class="btn btn-primary">Enviar</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- ------------- Demo de seguridad (XSS) ------------- -->
+        <section class="card shadow-sm" aria-labelledby="titulo-xss">
+          <div class="card-body">
+            <h2 id="titulo-xss" class="h5 card-title">
+              Demo: ¿qué pasa si usamos innerHTML? (XSS)
+            </h2>
+            <p class="text-body-secondary small">
+              El mismo texto se inserta de dos formas distintas. Con
+              <code>innerHTML</code> el navegador lo interpreta como HTML y
+              ejecuta el código; con <code>textContent</code> lo muestra como
+              texto plano. El chat de arriba usa siempre <code>textContent</code>.
+            </p>
+
+            <form id="xss-form" class="row g-2 align-items-end mb-3" novalidate>
+              <div class="col">
+                <label for="xss-input" class="form-label small">Texto de prueba</label>
+                <input type="text" id="xss-input" class="form-control font-monospace"
+                       value="&lt;img src=x onerror=&quot;alert('¡Esto se ejecutó! Así funciona un ataque XSS')&quot;&gt;"
+                       autocomplete="off">
+              </div>
+              <div class="col-auto">
+                <button type="submit" class="btn btn-outline-primary">Probar</button>
+              </div>
+            </form>
+
+            <!-- row/col: dos columnas en pantalla mediana y grande,
+                 apiladas una debajo de otra en celular. -->
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <div class="border border-danger-subtle bg-danger-subtle rounded p-3 h-100">
+                  <h3 class="h6">Con innerHTML (inseguro) <span aria-hidden="true">⚠️</span></h3>
+                  <div id="demo-inseguro" class="demo-output small"></div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="border border-success-subtle bg-success-subtle rounded p-3 h-100">
+                  <h3 class="h6">Con textContent (seguro) <span aria-hidden="true">✅</span></h3>
+                  <div id="demo-seguro" class="demo-output small"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ====================== PIE ====================== -->
+  <footer class="border-top py-3 mt-auto">
+    <div class="container text-center text-body-secondary small">
+      Proyecto de Desarrollo Web · UNISANGIL
+    </div>
+  </footer>
+
+  <!-- defer: el navegador descarga el archivo mientras sigue
+       leyendo el HTML y lo ejecuta al final. -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+
+  <!-- type="module" activa los módulos ES: permite import/export y
+       ya viene con "defer" incluido, por eso no hay que escribirlo.
+       Solo se carga main.mjs; los demás módulos llegan por sus import. -->
+  <script type="module" src="js/main.mjs"></script>
+</body>
+</html>

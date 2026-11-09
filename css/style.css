@@ -1,0 +1,184 @@
+/* ==========================================================
+   style.css  -  ESTILOS PROPIOS
+   ----------------------------------------------------------
+   Bootstrap ya resuelve la cuadrícula, las tarjetas, los
+   botones, los formularios y los dos temas de color. Aquí
+   queda SOLO lo que Bootstrap no trae: las burbujas del chat
+   y el indicador de "escribiendo…".
+
+   Se usan las variables de Bootstrap (--bs-...) en lugar de
+   colores fijos, para que todo cambie solo al pasar de tema
+   oscuro a tema claro sin escribir los colores dos veces.
+   ========================================================== */
+
+/* ----------------------------------------------------------
+   Variables propias
+   ----------------------------------------------------------
+   CONTRASTE MEDIDO (relación de contraste WCAG):
+     texto blanco #ffffff sobre azul #0a53be .......... 7.01:1
+     etiqueta     #cfe2ff sobre azul #0a53be .......... 5.34:1
+     burbuja bot, tema oscuro #dee2e6 sobre #343a40 ... 8.84:1
+     burbuja bot, tema claro  #212529 sobre #e9ecef ... 13.01:1
+   El mínimo que exige WCAG 2.1 nivel AA para texto normal es
+   4.5:1, así que los cuatro casos lo superan.
+
+   No se usa el azul #0d6efd de Bootstrap por defecto porque
+   con texto blanco queda justo en 4.50:1, sin margen.
+   ---------------------------------------------------------- */
+:root {
+  --faq-usuario-fondo: #0a53be;
+  --faq-usuario-texto: #ffffff;
+  --faq-usuario-etiqueta: #cfe2ff;
+  --faq-burbuja-radio: 1rem;
+}
+
+/* ----------------------------------------------------------
+   Enlace para saltar al contenido
+   ---------------------------------------------------------- */
+.skip-link:focus {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1080;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.5);
+}
+
+/* ----------------------------------------------------------
+   Zona de mensajes
+   ----------------------------------------------------------
+   clamp(mínimo, preferido, máximo): la altura se adapta a la
+   pantalla sin pasarse por arriba ni por abajo. En un celular
+   da unos 320px y en un monitor grande se detiene en 460px.
+   ---------------------------------------------------------- */
+.chat-log {
+  height: clamp(320px, 50vh, 460px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  scroll-behavior: smooth;
+}
+
+/* El contenedor del chat recibe foco con el teclado (tabindex="0")
+   para poder desplazarlo con las flechas; hay que verlo. */
+.chat-log:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: -2px;
+}
+
+/* ----------------------------------------------------------
+   Burbujas
+   ---------------------------------------------------------- */
+.message {
+  max-width: 85%;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--faq-burbuja-radio);
+  line-height: 1.4;
+  font-size: 0.95rem;
+  /* pre-wrap respeta los saltos de línea de los ejemplos de
+     código que trae la base de datos, sin usar innerHTML. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere; /* una URL larga no rompe el diseño */
+}
+
+.message--user {
+  align-self: flex-end;
+  background-color: var(--faq-usuario-fondo);
+  color: var(--faq-usuario-texto);
+  border-bottom-right-radius: 0.25rem;
+}
+
+.message--bot {
+  align-self: flex-start;
+  background-color: var(--bs-secondary-bg);
+  color: var(--bs-body-color);
+  border-bottom-left-radius: 0.25rem;
+}
+
+.message__texto {
+  /* El párrafo hereda el color de la burbuja en vez de usar el
+     color de texto por defecto de Bootstrap. */
+  color: inherit;
+}
+
+.message__tema {
+  display: inline-block;
+  background-color: rgba(0, 0, 0, 0.25);
+  color: var(--faq-usuario-etiqueta);
+  font-weight: 500;
+  font-size: 0.72rem;
+}
+
+.message--bot .message__tema {
+  background-color: var(--bs-tertiary-bg);
+  color: var(--bs-secondary-color);
+}
+
+/* ----------------------------------------------------------
+   Indicador de "escribiendo…"
+   ----------------------------------------------------------
+   Tres puntos que suben y bajan. Es la señal visible de que
+   la aplicación está esperando al servidor.
+   ---------------------------------------------------------- */
+.message--escribiendo {
+  padding-block: 0.85rem;
+}
+
+.puntos-escribiendo {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.puntos-escribiendo span {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background-color: var(--bs-secondary-color);
+  animation: rebote 1.2s infinite ease-in-out;
+}
+
+.puntos-escribiendo span:nth-child(2) { animation-delay: 0.15s; }
+.puntos-escribiendo span:nth-child(3) { animation-delay: 0.30s; }
+
+@keyframes rebote {
+  0%, 60%, 100% { transform: translateY(0);       opacity: 0.45; }
+  30%           { transform: translateY(-0.3rem); opacity: 1;    }
+}
+
+/* Accesibilidad: hay personas a quienes el movimiento les
+   produce mareo o migraña. Si lo pidieron en su sistema
+   operativo, quitamos las animaciones. */
+@media (prefers-reduced-motion: reduce) {
+  .puntos-escribiendo span { animation: none; opacity: 0.7; }
+  .chat-log { scroll-behavior: auto; }
+}
+
+/* ----------------------------------------------------------
+   Botones de sugerencia
+   ---------------------------------------------------------- */
+.suggestion-btn {
+  /* El texto largo se recorta con "…" en vez de deformar la fila. */
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ----------------------------------------------------------
+   Cajas de la demo de XSS
+   ---------------------------------------------------------- */
+.demo-output {
+  min-height: 2.5rem;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* En pantallas muy angostas el texto se achica un poco para
+   que las burbujas no ocupen toda la pantalla. */
+@media (max-width: 420px) {
+  .message { max-width: 92%; font-size: 0.9rem; }
+}
