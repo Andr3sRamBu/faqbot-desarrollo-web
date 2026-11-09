@@ -1,0 +1,31 @@
+# ==========================================================
+# .gitattributes  -  NORMALIZACIÓN DE FINALES DE LÍNEA
+# ----------------------------------------------------------
+# Windows termina las líneas con CRLF (\r\n) y Linux/macOS con
+# LF (\n). Sin este archivo, Git puede marcar un archivo como
+# "modificado entero" solo porque cambiaron los finales de
+# línea invisibles, y el servidor de Render (que corre Linux)
+# recibiría archivos con CRLF.
+#
+# "text=auto" le dice a Git: guarda siempre LF en el
+# repositorio y adapta al sistema de cada quien al descargar.
+# ==========================================================
+
+* text=auto
+
+# Estos siempre con LF, aunque se editen en Windows.
+*.mjs   text eol=lf
+*.js    text eol=lf
+*.json  text eol=lf
+*.css   text eol=lf
+*.html  text eol=lf
+*.md    text eol=lf
+
+# Archivos binarios: Git no debe tocarlos nunca.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.pdf   binary
+*.ico   binary

@@ -1,0 +1,25 @@
+# Dependencias de Node: se reinstalan con "npm install", nunca se suben.
+node_modules/
+
+# Variables de entorno: aquí viven claves y secretos. JAMÁS al repositorio.
+.env
+.env.*
+!.env.example
+
+# Registros y archivos temporales
+*.log
+npm-debug.log*
+logs/
+
+# Carpetas de construcción
+dist/
+build/
+
+# Archivos del sistema operativo
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Configuración local de editores
+.vscode/
+.idea/
